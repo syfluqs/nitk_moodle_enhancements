@@ -5,6 +5,7 @@
 - fix video-audio playback sync issue on changing playback speed.
 - use <kbd>space</kbd> bar or click on the video to play-pause.
 - automatically seek video to last seen time.
+- track seen videos, show completed percentage in each modules recordings list page.
 - hides player elements not being used, by default.
 - change playback speed with <kbd>+</kbd> and <kbd>-</kbd> buttons.
 - <kbd>+</kbd> and <kbd>-</kbd> buttons change speed at increments of 0.1.
