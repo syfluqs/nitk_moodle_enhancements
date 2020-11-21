@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nitk moodle enhancements
 // @namespace    https://lectures.iris.nitk.ac.in
-// @version      0.1
+// @version      0.2
 // @description  some bug fixes and enhancements for nitk moodle platform
 // @author       roy
 // @match        https://lectures.iris.nitk.ac.in/playback/*
@@ -60,11 +60,16 @@
         // syncing audio video on playback speed change
         // restoring previous playback rate
         let playback_rate = parseFloat(GM_getValue('nitk_noodle_playback_rate')) || 1.0;
-        console.log(playback_rate);
         let vid_elem = document.getElementById('deskshare-video');
         let aud_elem = document.getElementById('video');
         let speed_button = node.getElementsByClassName('acorn-speed-button')[0];
         function change_playback_speed(change_amount) {
+            if (vid_elem === null) {
+                // slides interface, no video element
+                // just change speed using built in logic
+                speed_button.click();
+                return;
+            }
             playback_rate += change_amount;
             vid_elem.playbackRate = playback_rate;
             aud_elem.playbackRate = playback_rate;
@@ -74,17 +79,20 @@
         // applying previous playback speed
         change_playback_speed(0);
         // hooking up speed button with new logic
-        let new_speed_button = speed_button.cloneNode(true);
-        speed_button.parentNode.replaceChild(new_speed_button, speed_button);
-        speed_button = new_speed_button;
-        speed_button.addEventListener('click', () => {
-            if (playback_rate > 2) {
-                playback_rate = 1;
-            } else {
-                playback_rate += 0.25;
-            }
-            change_playback_speed(0);
-        });
+        if (vid_elem !== null){
+            // only hook if vid element present
+            let new_speed_button = speed_button.cloneNode(true);
+            speed_button.parentNode.replaceChild(new_speed_button, speed_button);
+            speed_button = new_speed_button;
+            speed_button.addEventListener('click', () => {
+                if (playback_rate > 2) {
+                    playback_rate = 1;
+                } else {
+                    playback_rate += 0.25;
+                }
+                change_playback_speed(0);
+            });
+        }
         // hook key presses
         document.body.onkeyup = function(e){
             if(e.key == ' '){
