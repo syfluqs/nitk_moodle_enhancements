@@ -7,7 +7,7 @@
 // @match        https://lectures.iris.nitk.ac.in/playback/*
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @downloadURL  https://github.com/syfluqs/nitk_moodle_enhancements/raw/master/nitk_moodle_enhancements.user.js
+// @downloadURL  https://github.com/syfluqs/nitk_moodle_enhancements/raw/main/nitk_moodle_enhancements.user.js
 // ==/UserScript==
 
 (function() {

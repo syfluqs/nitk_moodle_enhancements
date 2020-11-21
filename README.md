@@ -23,4 +23,4 @@ https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/
 And then, click the button below to install.
 
 [<img src="https://img.shields.io/static/v1?label=Install&message=NITK%20Moodle%20Enhancements&color=brightgreen?style=for-the-badge" 
-height="25"/>](https://github.com/syfluqs/nitk_moodle_enhancements/raw/master/nitk_moodle_enhancements.user.js)
+height="25"/>](https://github.com/syfluqs/nitk_moodle_enhancements/raw/main/nitk_moodle_enhancements.user.js)
