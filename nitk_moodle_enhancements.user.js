@@ -47,6 +47,7 @@
     });
 
     function init(node) {
+        let localstorage = window.localStorage;
         console.log('=== enhancing moodle ===');
         let play_button = node.getElementsByClassName('acorn-play-button')[0];
         let main_section = document.getElementById('main-section');
@@ -63,6 +64,12 @@
         let vid_elem = document.getElementById('deskshare-video');
         let aud_elem = document.getElementById('video');
         let speed_button = node.getElementsByClassName('acorn-speed-button')[0];
+        let sidebar_button = document.getElementsByClassName('sidebar-icon')[0];
+        let exit_overlay = document.getElementsByClassName('exit-off-canvas')[0];
+        let playback_timer = document.getElementsByClassName('acorn-timer')[0];
+
+        let video_id = (new URL(window.location)).searchParams.get('meetingId');
+
         function change_playback_speed(change_amount) {
             if (vid_elem === null) {
                 // slides interface, no video element
@@ -76,11 +83,36 @@
             GM_setValue('nitk_noodle_playback_rate', playback_rate);
             speed_button.innerHTML = playback_rate.toFixed(2);
         }
-        // applying previous playback speed
-        change_playback_speed(0);
-        // hooking up speed button with new logic
+
+        function store_playback_time(id_key) {
+            let current_playback_time = aud_elem.currentTime;
+            // only store if current playback time is greater than 5 seconds
+            if (current_playback_time > 5) {
+                localstorage.setItem(`moodle_last_time_${id_key}`, current_playback_time);
+            }
+        }
+
+        function resume_playback(id_key) {
+            let currurl = new URL(window.location);
+            let url_time = currurl.searchParams.get('t');
+            let last_playback_time = localstorage.getItem(`moodle_last_time_${id_key}`);
+            if (last_playback_time && (url_time === null)) {
+                aud_elem.currentTime = parseFloat(last_playback_time);
+            }
+        }
+
+        let resume_playback_timer = setInterval(() => {
+            if (videoReady) {
+                resume_playback(video_id);
+                clearInterval(resume_playback_timer);
+            }
+        }, 500);
+        // save the current video playback time every 5 seconds
+        setInterval(() => { store_playback_time(video_id); }, 5000);
+
         if (vid_elem !== null){
             // only hook if vid element present
+            // hooking up speed button with new logic
             let new_speed_button = speed_button.cloneNode(true);
             speed_button.parentNode.replaceChild(new_speed_button, speed_button);
             speed_button = new_speed_button;
@@ -92,7 +124,15 @@
                 }
                 change_playback_speed(0);
             });
+            // applying previous playback speed
+            change_playback_speed(0);
+        } else {
+            // show slides sidebar
+            exit_overlay.remove();
+            // sidebar_button.click();
         }
+
+
         // hook key presses
         document.body.onkeyup = function(e){
             if(e.key == ' '){
