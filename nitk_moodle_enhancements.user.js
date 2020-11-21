@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nitk moodle enhancements
 // @namespace    https://lectures.iris.nitk.ac.in
-// @version      0.4
+// @version      0.5
 // @description  some bug fixes and enhancements for nitk moodle platform
 // @author       roy
 // @match        https://lectures.iris.nitk.ac.in/playback/*
@@ -142,13 +142,32 @@
             });
 
             // hook key presses
-            document.body.onkeyup = function(e){
-                if(e.key == ' '){
-                    play_pause();
-                } else if (e.key == '+') {
-                    change_playback_speed(0.1);
-                } else if (e.key == '-') {
-                    change_playback_speed(-0.1);
+            document.body.onkeydown = function(e){
+                e.preventDefault();
+                switch(e.key) {
+                    case ' ': play_pause(); break;
+                    case '+': change_playback_speed(0.1); break;
+                    case '-': change_playback_speed(-0.1); break;
+                    case 'ArrowLeft': {
+                        if (e.ctrlKey) {
+                            aud_elem.currentTime -= 300;
+                        } else if (e.shiftKey) {
+                            aud_elem.currentTime -= 60;
+                        } else {
+                            aud_elem.currentTime -= 5;
+                        }
+                        break;
+                    }
+                    case 'ArrowRight': {
+                        if (e.ctrlKey) {
+                            aud_elem.currentTime += 300;
+                        } else if (e.shiftKey) {
+                            aud_elem.currentTime += 60;
+                        } else {
+                            aud_elem.currentTime += 5;
+                        }
+                        break;
+                    }
                 }
             }
         }
