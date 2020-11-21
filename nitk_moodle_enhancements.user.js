@@ -143,11 +143,10 @@
 
             // hook key presses
             document.body.onkeydown = function(e){
-                e.preventDefault();
                 switch(e.key) {
-                    case ' ': play_pause(); break;
-                    case '+': change_playback_speed(0.1); break;
-                    case '-': change_playback_speed(-0.1); break;
+                    case ' ': play_pause(); e.preventDefault(); break;
+                    case '+': change_playback_speed(0.1); e.preventDefault(); break;
+                    case '-': change_playback_speed(-0.1); e.preventDefault(); break;
                     case 'ArrowLeft': {
                         if (e.ctrlKey) {
                             aud_elem.currentTime -= 300;
@@ -156,6 +155,7 @@
                         } else {
                             aud_elem.currentTime -= 5;
                         }
+                        e.preventDefault();
                         break;
                     }
                     case 'ArrowRight': {
@@ -166,6 +166,7 @@
                         } else {
                             aud_elem.currentTime += 5;
                         }
+                        e.preventDefault();
                         break;
                     }
                 }
