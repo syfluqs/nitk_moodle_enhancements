@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nitk moodle enhancements
 // @namespace    https://lectures.iris.nitk.ac.in
-// @version      0.6
+// @version      0.7
 // @description  some bug fixes and enhancements for nitk moodle platform
 // @author       roy
 // @match        https://lectures.iris.nitk.ac.in/playback/*
@@ -139,6 +139,11 @@
             // detect when video ends and mark that video as completed
             aud_elem.addEventListener('ended', (e) => {
                 GM_setValue(`moodle_last_time_${video_id}`, 0, false);
+            });
+
+            // remove the seek bar handle
+            Array.from(document.getElementsByClassName('ui-slider-handle')).forEach((n) => {
+                n.parentElement.removeChild(n);
             });
 
             // hook key presses
