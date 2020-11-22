@@ -14,6 +14,8 @@ to seek in 5 min increments, <kbd>Shift</kbd>+<kbd>←</kbd>/<kbd>→</kbd> to s
 - <kbd>+</kbd> and <kbd>-</kbd> buttons change speed at increments of 0.1.
 - clicking on the speed button changes it by 0.25 increments.
 
+## Installation
+
 To use, first install Tampermonkey extension on your preferred 
 web browser.
 
