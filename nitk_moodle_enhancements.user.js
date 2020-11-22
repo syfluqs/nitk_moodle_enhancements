@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nitk moodle enhancements
 // @namespace    https://lectures.iris.nitk.ac.in
-// @version      0.7
+// @version      0.8
 // @description  some bug fixes and enhancements for nitk moodle platform
 // @author       roy
 // @match        https://lectures.iris.nitk.ac.in/playback/*
@@ -181,34 +181,56 @@
         // moodle course listings
         let rec_list_table = document.getElementsByClassName('generaltable')[0];
 
-        function append_cell_in_row(row, cell_content) {
+        function append_cell_in_row(row) {
             let row_html_collection = row.children;
             let new_cell = row_html_collection[row_html_collection.length - 1].cloneNode(true);
-            new_cell.innerHTML = cell_content;
+            new_cell.innerHTML = '';
             row_html_collection[row_html_collection.length - 1].parentNode.appendChild(new_cell);
         }
 
-        let head_row = rec_list_table.getElementsByTagName('thead')[0].getElementsByTagName('tr')[0];
-        append_cell_in_row(head_row, 'Seen');
+        function update_last_cell_in_row(row, cell_content) {
+            let row_html_collection = row.children;
+            let last_cell = row_html_collection[row_html_collection.length - 1];
+            last_cell.innerHTML = cell_content;
+        }
 
-        Array.from(rec_list_table.getElementsByTagName('tbody')[0].children).forEach((row) => {
-            let video_id = /^recording-tr-(.*)$/.exec(row.id)[1];
-            let seen_duration = parseFloat(GM_getValue(`moodle_last_time_${video_id}`));
-            if (seen_duration == 0) {
-                append_cell_in_row(row, '✓');
-            } else if (!seen_duration) {
-                append_cell_in_row(row, '-');
-            } else {
-                let total_duration = parseFloat(row.children[row.childElementCount - 1].innerText) * 60;
-                if (total_duration) {
-                    let seen_percent = Math.round(seen_duration*100/total_duration);
-                    if (seen_percent >= 98) {
-                        append_cell_in_row(row, '✓');
-                    } else {
-                        append_cell_in_row(row, `${seen_percent}%`);
+        let appended_cells = false;
+
+        function show_seen_data() {
+            let head_row = rec_list_table.getElementsByTagName('thead')[0].getElementsByTagName('tr')[0];
+            if (!appended_cells){
+                append_cell_in_row(head_row);
+                update_last_cell_in_row(head_row, 'Seen');
+            }
+
+            Array.from(rec_list_table.getElementsByTagName('tbody')[0].children).forEach((row) => {
+                let video_id = /^recording-tr-(.*)$/.exec(row.id)[1];
+                let seen_duration = parseFloat(GM_getValue(`moodle_last_time_${video_id}`));
+                if (seen_duration == 0) {
+                    if (!appended_cells) append_cell_in_row(row);
+                    update_last_cell_in_row(row, '✓');
+                } else if (!seen_duration) {
+                    if (!appended_cells) append_cell_in_row(row);
+                    update_last_cell_in_row(row, '-');
+                } else {
+                    let total_duration = parseFloat(row.children[row.childElementCount - (appended_cells?2:1)].innerText) * 60;
+                    if (total_duration) {
+                        let seen_percent = Math.round(seen_duration*100/total_duration);
+                        if (seen_percent >= 98) {
+                            if (!appended_cells) append_cell_in_row(row);
+                            update_last_cell_in_row(row, '✓');
+                        } else {
+                            if (!appended_cells) append_cell_in_row(row);
+                            update_last_cell_in_row(row, `${seen_percent}%`);
+                        }
                     }
                 }
-            }
-        });
+            });
+
+            appended_cells = true;
+        }
+
+        setInterval(show_seen_data, 10000);
+        show_seen_data();
     }
 })();
