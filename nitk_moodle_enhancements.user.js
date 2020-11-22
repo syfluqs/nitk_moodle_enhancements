@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nitk moodle enhancements
 // @namespace    https://lectures.iris.nitk.ac.in
-// @version      0.5
+// @version      0.6
 // @description  some bug fixes and enhancements for nitk moodle platform
 // @author       roy
 // @match        https://lectures.iris.nitk.ac.in/playback/*
@@ -172,7 +172,7 @@
                 }
             }
         }
-    } else if (/https:\/\/courses.iris.nitk.ac.in\/mod\/.*$/.test(window.location.href)) {
+    } else if (/https:\/\/courses.iris.nitk.ac.in\/mod\/bigbluebuttonbn\/.*$/.test(window.location.href)) {
         // moodle course listings
         let rec_list_table = document.getElementsByClassName('generaltable')[0];
 
