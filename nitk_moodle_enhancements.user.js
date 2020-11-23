@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nitk moodle enhancements
 // @namespace    https://lectures.iris.nitk.ac.in
-// @version      0.8
+// @version      0.9
 // @description  some bug fixes and enhancements for nitk moodle platform
 // @author       roy
 // @match        https://lectures.iris.nitk.ac.in/playback/*
@@ -75,15 +75,15 @@
             let video_id = (new URL(window.location)).searchParams.get('meetingId');
 
             function change_playback_speed(change_amount) {
+                playback_rate += change_amount;
                 if (vid_elem === null) {
                     // slides interface, no video element
                     // just change speed using built in logic
-                    speed_button.click();
-                    return;
+                    $("#video")[0].playbackRate = playback_rate;
+                } else {
+                    vid_elem.playbackRate = playback_rate;
+                    aud_elem.playbackRate = playback_rate;
                 }
-                playback_rate += change_amount;
-                vid_elem.playbackRate = playback_rate;
-                aud_elem.playbackRate = playback_rate;
                 GM_setValue('nitk_noodle_playback_rate', playback_rate);
                 speed_button.innerHTML = playback_rate.toFixed(2);
             }
@@ -114,27 +114,21 @@
             // save the current video playback time every 5 seconds
             setInterval(() => { store_playback_time(video_id); }, 5000);
 
-            if (vid_elem !== null){
-                // only hook if vid element present
-                // hooking up speed button with new logic
-                let new_speed_button = speed_button.cloneNode(true);
-                speed_button.parentNode.replaceChild(new_speed_button, speed_button);
-                speed_button = new_speed_button;
-                speed_button.addEventListener('click', () => {
-                    if (playback_rate > 2) {
-                        playback_rate = 1;
-                    } else {
-                        playback_rate += 0.25;
-                    }
-                    change_playback_speed(0);
-                });
-                // applying previous playback speed
+            // only hook if vid element present
+            // hooking up speed button with new logic
+            let new_speed_button = speed_button.cloneNode(true);
+            speed_button.parentNode.replaceChild(new_speed_button, speed_button);
+            speed_button = new_speed_button;
+            speed_button.addEventListener('click', () => {
+                if (playback_rate > 2) {
+                    playback_rate = 1;
+                } else {
+                    playback_rate += 0.25;
+                }
                 change_playback_speed(0);
-            } else {
-                // show slides sidebar
-                exit_overlay.remove();
-                // sidebar_button.click();
-            }
+            });
+            // applying previous playback speed
+            change_playback_speed(0);
 
             // detect when video ends and mark that video as completed
             aud_elem.addEventListener('ended', (e) => {
