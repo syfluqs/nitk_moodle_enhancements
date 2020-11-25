@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nitk moodle enhancements
 // @namespace    https://lectures.iris.nitk.ac.in
-// @version      0.9
+// @version      0.10
 // @description  some bug fixes and enhancements for nitk moodle platform
 // @author       roy
 // @match        https://lectures.iris.nitk.ac.in/playback/*
@@ -175,6 +175,11 @@
         // moodle course listings
         let rec_list_table = document.getElementsByClassName('generaltable')[0];
 
+        function get_cell_in_row(row, n) {
+            let filtered_rows = row.getElementsByClassName(`c${n}`);
+            if (filtered_rows) return filtered_rows[0];
+        }
+
         function append_cell_in_row(row) {
             let row_html_collection = row.children;
             let new_cell = row_html_collection[row_html_collection.length - 1].cloneNode(true);
@@ -224,7 +229,45 @@
             appended_cells = true;
         }
 
+        function fill_notes_in_row(row, note) {
+            let notes_div = document.createElement('div');
+            notes_div.innerText = note;
+            notes_div.setAttribute('style', 'font-size: 10px;');
+            notes_div.setAttribute('class', 'user-note');
+            get_cell_in_row(row, 2).appendChild(notes_div);
+        }
+
+        function notes_user_input(row, video_id) {
+            return (e) => {
+                let filled_note = get_cell_in_row(row, 2).getElementsByClassName('user-note');
+                let note = '';
+                if (filled_note.length > 0) {
+                    note = window.prompt('', filled_note[0].innerText);
+                    if (note === null) return;
+                    filled_note[0].innerText = note;
+                } else {
+                    note = window.prompt();
+                    if (note === null) return;
+                    fill_notes_in_row(row, note);
+                }
+                GM_setValue(`moodle_notes_${video_id}`, note);
+            };
+        }
+
+        function populate_notes() {
+            Array.from(rec_list_table.getElementsByTagName('tbody')[0].children).forEach((row) => {
+                let video_id = /^recording-tr-(.*)$/.exec(row.id)[1];
+                let row_notes = GM_getValue(`moodle_notes_${video_id}`) || '';
+                if (row_notes) {
+                    fill_notes_in_row(row, row_notes);
+                }
+                // hook up note edit click listener
+                get_cell_in_row(row, 2).addEventListener('click', notes_user_input(row, video_id));
+            });
+        }
+
         setInterval(show_seen_data, 10000);
         show_seen_data();
+        populate_notes();
     }
 })();

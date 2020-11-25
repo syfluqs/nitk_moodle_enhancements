@@ -6,6 +6,7 @@
 - use <kbd>space</kbd> bar or click on the video to play-pause.
 - automatically seek video to last seen time.
 - track seen videos, show completed percentage in each modules recordings list page.
+- add user notes in the description column of the recordings list. (click on the description cell to add or edit note).
 - seek video using <kbd>←</kbd> and <kbd>→</kbd> keys (in increments of 5s).
 - use <kbd>Ctrl</kbd>+<kbd>←</kbd>/<kbd>→</kbd>
 to seek in 5 min increments, <kbd>Shift</kbd>+<kbd>←</kbd>/<kbd>→</kbd> to seek by 1 min increments.
